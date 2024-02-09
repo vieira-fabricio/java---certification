@@ -18,11 +18,8 @@ public class AlternativeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     private String description;
-
     private boolean isCorrect;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
