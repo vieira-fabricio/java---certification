@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CertificationStudentRepository extends JpaRepository<CertificationStudentEntity,UUID> {
-    @Query("SELECT c FROM certifications c INNER JOIN c.studentEntity std WHERE std.email = :email AND c.tecnology = :tecnology")
-    List<CertificationStudentEntity> findStudentEmailAndTecnology(String email, String tecnology);
+    @Query("SELECT c FROM certifications c INNER JOIN c.studentEntity std WHERE std.email = :email AND c.technology = :technology")
+    List<CertificationStudentEntity> findStudentEmailAndTechnology(String email, String technology);
 }
