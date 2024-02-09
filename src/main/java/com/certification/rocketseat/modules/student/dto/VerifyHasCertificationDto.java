@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class VerifyHasCertificationDto {
 
     private String email;
-    private String tecnology;
+    private String technology;
 }

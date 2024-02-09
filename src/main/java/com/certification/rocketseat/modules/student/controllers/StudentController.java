@@ -1,6 +1,9 @@
 package com.certification.rocketseat.modules.student.controllers;
 
+import com.certification.rocketseat.modules.student.dto.StudentCertificationAnswerDto;
 import com.certification.rocketseat.modules.student.dto.VerifyHasCertificationDto;
+import com.certification.rocketseat.modules.student.entities.CertificationStudentEntity;
+import com.certification.rocketseat.modules.student.usecases.StudentCertificationAnswersUseCase;
 import com.certification.rocketseat.modules.student.usecases.VerifyIfHasCertificationUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +17,8 @@ public class StudentController {
 
     @Autowired
     private VerifyIfHasCertificationUseCase verifyIfHasCertificationUseCase;
+    @Autowired
+    private StudentCertificationAnswersUseCase studentCertificationAnswersUseCase;
 
     @PostMapping("/verifyifhascertification")
     public String verifyIfHasCertification(@RequestBody VerifyHasCertificationDto verifyHasCertificationDto) {
@@ -24,5 +29,11 @@ public class StudentController {
             return "Usuário já fez a prova!";
         }
         return "O aluno pode fazer a prova!";
+    }
+
+    @PostMapping("/certification/answer")
+    public CertificationStudentEntity certificationAnswer(@RequestBody StudentCertificationAnswerDto studentCertificationAnswerDto) {
+
+        return studentCertificationAnswersUseCase.execute(studentCertificationAnswerDto);
     }
 }
