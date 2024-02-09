@@ -19,24 +19,23 @@ import java.util.stream.Collectors;
 public class QuestionController {
     @Autowired
     private QuestionRepository repository;
-    @GetMapping("/tecnology/{tecnology}")
-    public List<QuestionResultDto> findByTecnology(@PathVariable String tecnology) {
-       var result = this.repository.findByTecnology(tecnology);
+    @GetMapping("/technology/{technology}")
+    public List<QuestionResultDto> findByTechnology(@PathVariable String technology) {
+       var result = this.repository.findByTechnology(technology);
 
-       var toMap = result.stream().map(question -> mapQuestionToDto(question))
-               .collect(Collectors.toList());
-       return toMap;
+        return result.stream().map(QuestionController::mapQuestionToDto)
+                .collect(Collectors.toList());
     }
 
     static QuestionResultDto mapQuestionToDto(QuestionEntity question) {
         var questionResultDto = QuestionResultDto.builder()
                 .id(question.getId())
-                .tecnology(question.getTecnology())
+                .technology(question.getTechnology())
                 .description(question.getDescription()).build();
 
         List<AlternativesResultDto> alternativesResultDto = question
                 .getAlternativeEntity()
-                .stream().map(alternativeEntity -> mapAlternativeDto(alternativeEntity))
+                .stream().map(QuestionController::mapAlternativeDto)
                 .collect(Collectors.toList());
 
         questionResultDto.setAlternativesResultDto(alternativesResultDto);

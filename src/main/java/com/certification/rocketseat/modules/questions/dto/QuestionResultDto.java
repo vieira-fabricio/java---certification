@@ -14,7 +14,7 @@ import java.util.UUID;
 public class QuestionResultDto {
 
     private UUID id;
-    private String tecnology;
+    private String technology;
     private String description;
 
     private List<AlternativesResultDto> alternativesResultDto;
