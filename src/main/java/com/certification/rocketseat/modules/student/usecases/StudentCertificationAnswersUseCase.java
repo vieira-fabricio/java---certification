@@ -80,15 +80,6 @@ public class StudentCertificationAnswersUseCase {
                     return repository.save(studentCreated).getId();
                 });
 
-        /*var studentExist = repository.findByEmail(dto.getEmail());
-        UUID studendID;
-        if (studentExist.isEmpty()){
-            var studentCreated = StudentEntity.builder().email(dto.getEmail()).build();
-            studentCreated = repository.save(studentCreated);
-            studendID = studentCreated.getId();
-        } else {
-            studendID = studentExist.get().getId();
-        }*/
 
         CertificationStudentEntity certificationStudentEntity = CertificationStudentEntity.builder()
                 .technology(dto.getTechnology())
