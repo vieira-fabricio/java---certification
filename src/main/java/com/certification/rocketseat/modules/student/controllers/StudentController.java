@@ -6,6 +6,7 @@ import com.certification.rocketseat.modules.student.entities.CertificationStuden
 import com.certification.rocketseat.modules.student.usecases.StudentCertificationAnswersUseCase;
 import com.certification.rocketseat.modules.student.usecases.VerifyIfHasCertificationUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,14 @@ public class StudentController {
     }
 
     @PostMapping("/certification/answer")
-    public CertificationStudentEntity certificationAnswer(@RequestBody StudentCertificationAnswerDto studentCertificationAnswerDto) {
+    public ResponseEntity<Object> certificationAnswer(@RequestBody StudentCertificationAnswerDto studentCertificationAnswerDto) {
 
-        return studentCertificationAnswersUseCase.execute(studentCertificationAnswerDto);
+        try {
+            var result = studentCertificationAnswersUseCase.execute(studentCertificationAnswerDto);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 }
