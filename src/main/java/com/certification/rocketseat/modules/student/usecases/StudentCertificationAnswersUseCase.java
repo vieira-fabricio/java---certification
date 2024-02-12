@@ -3,10 +3,12 @@ package com.certification.rocketseat.modules.student.usecases;
 import com.certification.rocketseat.modules.questions.entidades.AlternativeEntity;
 import com.certification.rocketseat.modules.questions.entidades.QuestionEntity;
 import com.certification.rocketseat.modules.questions.repository.QuestionRepository;
+import com.certification.rocketseat.modules.student.dto.QuestionAnswerDto;
 import com.certification.rocketseat.modules.student.dto.StudentCertificationAnswerDto;
 import com.certification.rocketseat.modules.student.dto.VerifyHasCertificationDto;
 import com.certification.rocketseat.modules.student.entities.AnswersCertificationsEntity;
 import com.certification.rocketseat.modules.student.entities.CertificationStudentEntity;
+import com.certification.rocketseat.modules.student.entities.QuestionResultEntity;
 import com.certification.rocketseat.modules.student.entities.StudentEntity;
 import com.certification.rocketseat.modules.student.repository.CertificationStudentRepository;
 import com.certification.rocketseat.modules.student.repository.StudentRepository;
@@ -32,9 +34,9 @@ public class StudentCertificationAnswersUseCase {
 
     public CertificationStudentEntity execute(StudentCertificationAnswerDto dto) throws Exception {
 
-        var hasCerification = verifyIfHasCertificationUseCase.execute(new VerifyHasCertificationDto(dto.getEmail(), dto.getTechnology()));
+        var hasCertification = verifyIfHasCertificationUseCase.execute(new VerifyHasCertificationDto(dto.getEmail(), dto.getTechnology()));
 
-        if (hasCerification) {
+        if (hasCertification) {
             throw new Exception("Você já tirou a sua certificação!");
         }
 
@@ -70,6 +72,16 @@ public class StudentCertificationAnswersUseCase {
             }
         });
 
+        List<QuestionResultEntity> questionResults = new ArrayList<>();
+        for (QuestionAnswerDto questionAnswer : dto.getQuestionAnswerDto()) {
+            QuestionResultEntity questionResult = new QuestionResultEntity();
+            questionResult.setQuestionId(questionAnswer.getQuestionId());
+
+            questionResult.setCorrect(questionAnswer.isCorrect());
+
+            questionResults.add(questionResult);
+        }
+
         //verificar se o estudante existe pelo email
         UUID studendID = repository.findByEmail(dto.getEmail())
                 .map(StudentEntity::getId)
@@ -80,14 +92,23 @@ public class StudentCertificationAnswersUseCase {
                     return repository.save(studentCreated).getId();
                 });
 
+        // Calcula o número total de respostas corretas
+        long correctAnswersCount = dto.getQuestionAnswerDto().stream()
+                .filter(QuestionAnswerDto::isCorrect)
+                .count();
+
+        // Calcula a nota com base no número total de respostas corretas
+        double grade = (double) correctAnswersCount / dto.getQuestionAnswerDto().size() * 10;
+
 
         CertificationStudentEntity certificationStudentEntity = CertificationStudentEntity.builder()
                 .technology(dto.getTechnology())
                 .studentID(studendID)
-                .grade(correctAnswers.get())
+                .grade((int) grade)
+                .questionResults(questionResults)
                 .build();
 
-        var certificationStudentCreated = certificationRepository.save(certificationStudentEntity);
+        CertificationStudentEntity certificationStudentCreated = certificationRepository.save(certificationStudentEntity);
 
         answersCertifications.stream().forEach(answersCertification -> {
             answersCertification.setCertificationID(certificationStudentEntity.getId());

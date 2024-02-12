@@ -36,6 +36,9 @@ public class CertificationStudentEntity {
     @JoinColumn(name = "answer_certification_id", insertable = false, updatable = false)
     @JsonIgnore
     List<AnswersCertificationsEntity> answersCertificationsEntity;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "Question_result_id")
+    private List<QuestionResultEntity> questionResults;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
