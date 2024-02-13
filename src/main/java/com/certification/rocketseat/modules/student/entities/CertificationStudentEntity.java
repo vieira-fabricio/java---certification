@@ -28,6 +28,8 @@ public class CertificationStudentEntity {
     private int grade;
     @Column(name = "student_id")
     private UUID studentID;
+    @Column(name = "student_name")
+    private String StudentName;
     @ManyToOne
     @JoinColumn(name = "student_id", insertable = false, updatable = false)
     @JsonIgnore

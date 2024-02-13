@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,63 +35,73 @@ public class StudentCertificationAnswersUseCase {
 
     public CertificationStudentEntity execute(StudentCertificationAnswerDto dto) throws Exception {
 
-        var hasCertification = verifyIfHasCertificationUseCase.execute(new VerifyHasCertificationDto(dto.getEmail(), dto.getTechnology()));
+        verifyIfExistingCertification(dto.getEmail(), dto.getTechnology(), dto.getName());
+
+        List<AnswersCertificationsEntity> answersCertifications = processQuestionAnswers(dto);
+
+        return saveCertification(dto, answersCertifications);
+    }
+
+    //Método que verifica se o candidato já tirou uma certificação para a mesma tecnologia.
+    private void verifyIfExistingCertification(String email, String technology, String name) throws Exception {
+        boolean hasCertification = verifyIfHasCertificationUseCase.execute(
+                new VerifyHasCertificationDto(email, technology, name));
 
         if (hasCertification) {
             throw new Exception("Você já tirou a sua certificação!");
         }
+    }
 
-        //buscar as alternativas das perguntas
+    //Método que busca as alternativas das perguntas.
+    private List<AnswersCertificationsEntity> processQuestionAnswers(StudentCertificationAnswerDto dto) {
         List<QuestionEntity> questionsEntity = questionRepository.findByTechnology(dto.getTechnology());
         List<AnswersCertificationsEntity> answersCertifications = new ArrayList<>();
 
         AtomicInteger correctAnswers = new AtomicInteger(0);
 
         dto.getQuestionAnswerDto().forEach(questionAnswer -> {
-            var questionResultOptional = questionsEntity.stream().filter(question -> question.getId()
-                    .equals(questionAnswer.getQuestionId())).findFirst();
+            Optional<QuestionEntity> questionResultOptional = questionsEntity.stream()
+                    .filter(question -> question.getId().equals(questionAnswer.getQuestionId()))
+                            .findFirst();
 
-            if (questionResultOptional.isPresent()) {
-                var questionResult = questionResultOptional.get();
+            questionResultOptional.ifPresent(questionResult -> {
+                Optional<AlternativeEntity> correctAlternativeOptional = questionResult.getAlternativeEntity().stream()
+                        .filter(AlternativeEntity::isCorrect)
+                        .findFirst();
 
-                var correctAlternativeOptional = questionResult.getAlternativeEntity().stream()
-                        .filter(AlternativeEntity::isCorrect).findFirst();
-
-                if (correctAlternativeOptional.isPresent()) {
-                    var correctAlternative = correctAlternativeOptional.get();
-
-                    questionAnswer.setCorrect(correctAlternative.getId().equals(questionAnswer.getAlternativeId()));
+                correctAlternativeOptional.ifPresent(correctAlternative -> {
+                    boolean isCorrect = correctAlternative.getId().equals(questionAnswer.getAlternativeId());
+                    questionAnswer.setCorrect(isCorrect);
                     correctAnswers.incrementAndGet();
 
-                    var answerCertificationsEntity = AnswersCertificationsEntity.builder()
+                    AnswersCertificationsEntity answersCertificationsEntity = AnswersCertificationsEntity.builder()
                             .answerID(questionAnswer.getAlternativeId())
                             .questionID(questionAnswer.getQuestionId())
-                            .isCorrect(questionAnswer.isCorrect()).build();
-
-                    answersCertifications.add(answerCertificationsEntity);
-                }
-            }
-        });
-
-        List<QuestionResultEntity> questionResults = new ArrayList<>();
-        for (QuestionAnswerDto questionAnswer : dto.getQuestionAnswerDto()) {
-            QuestionResultEntity questionResult = new QuestionResultEntity();
-            questionResult.setQuestionId(questionAnswer.getQuestionId());
-
-            questionResult.setCorrect(questionAnswer.isCorrect());
-
-            questionResults.add(questionResult);
-        }
-
-        //verificar se o estudante existe pelo email
-        UUID studendID = repository.findByEmail(dto.getEmail())
-                .map(StudentEntity::getId)
-                .orElseGet(() -> {
-                    StudentEntity studentCreated = StudentEntity.builder()
-                            .email(dto.getEmail())
+                            .isCorrect(isCorrect)
                             .build();
-                    return repository.save(studentCreated).getId();
+
+                    answersCertifications.add(answersCertificationsEntity);
                 });
+            });
+        });
+        return answersCertifications;
+    }
+
+    //Método que vai salvar os dados da certificação.
+    private CertificationStudentEntity saveCertification(StudentCertificationAnswerDto dto,
+                                                         List<AnswersCertificationsEntity>
+                                                                 answersCertifications) {
+        List<QuestionResultEntity> questionResults = dto.getQuestionAnswerDto().stream()
+                .map(questionAnswer -> {
+                    QuestionResultEntity questionResult = new QuestionResultEntity();
+                    questionResult.setQuestionId(questionAnswer.getQuestionId());
+                    questionResult.setCorrect(questionAnswer.isCorrect());
+                    return questionResult;
+                })
+                .toList();
+
+        //verifica se o estudante existe pelo email
+        UUID studendID = getOrCreateStudentId(dto.getEmail());
 
         // Calcula o número total de respostas corretas
         long correctAnswersCount = dto.getQuestionAnswerDto().stream()
@@ -98,17 +109,18 @@ public class StudentCertificationAnswersUseCase {
                 .count();
 
         // Calcula a nota com base no número total de respostas corretas
-        double grade = (double) correctAnswersCount / dto.getQuestionAnswerDto().size() * 10;
-
+        double grade = (double) correctAnswersCount / dto.getQuestionAnswerDto().size() * 3;
 
         CertificationStudentEntity certificationStudentEntity = CertificationStudentEntity.builder()
                 .technology(dto.getTechnology())
                 .studentID(studendID)
+                .StudentName(dto.getName())
                 .grade((int) grade)
                 .questionResults(questionResults)
                 .build();
 
-        CertificationStudentEntity certificationStudentCreated = certificationRepository.save(certificationStudentEntity);
+        CertificationStudentEntity certificationStudentCreated = certificationRepository
+                .save(certificationStudentEntity);
 
         answersCertifications.stream().forEach(answersCertification -> {
             answersCertification.setCertificationID(certificationStudentEntity.getId());
@@ -117,9 +129,16 @@ public class StudentCertificationAnswersUseCase {
 
         certificationStudentEntity.setAnswersCertificationsEntity(answersCertifications);
 
-        certificationRepository.save(certificationStudentEntity);
-
         return certificationStudentCreated;
-        //salvar as informações da certificação
+    }
+
+    //Método responsável por verificar se o estudante já existe pelo email.
+    private UUID getOrCreateStudentId(String email) {
+        Optional<StudentEntity> studentOptional = repository.findByEmail(email);
+        return studentOptional.map(StudentEntity::getId)
+                .orElseGet(() -> {
+                    StudentEntity newStudent = StudentEntity.builder().email(email).build();
+                    return repository.save(newStudent).getId();
+                });
     }
 }

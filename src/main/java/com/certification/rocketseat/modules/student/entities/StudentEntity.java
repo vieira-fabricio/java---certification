@@ -20,6 +20,8 @@ public class StudentEntity {
     private UUID id;
     @Column(unique = true, nullable = false)
     private String email;
+
+    private String name;
     @OneToMany(mappedBy = "studentEntity")
     private List<CertificationStudentEntity> certificationStudentEntity;
 

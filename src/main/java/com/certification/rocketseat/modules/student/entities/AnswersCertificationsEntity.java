@@ -30,6 +30,8 @@ public class AnswersCertificationsEntity {
 
     @Column(name = "student_id")
     private UUID studentID;
+    @Column(name = "student_name")
+    private String studentName;
     @ManyToOne
     @JoinColumn(name = "student_id", insertable = false, updatable = false)
     @JsonIgnore
