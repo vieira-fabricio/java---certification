@@ -5,8 +5,8 @@ onde o usuário se cadastra informando seu nome, e-mail e tecnologia que pretend
 
 | Linguagens de Programação | Ferramentas e Tecnologias |
 | :-----------------: | :-----------------------: |
-| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/java.svg"> | | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/postgresql.svg"> |
-| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/intellij-ide.svg"> | | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/spring.svg">  |
+| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/java.svg"> | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/postgresql.svg"> |
+| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/intellij-ide.svg"> | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/spring.svg">  |
 
 
 ## Instalação
