@@ -5,10 +5,8 @@ onde o usuário se cadastra informando seu nome, e-mail e tecnologia que pretend
 
 | Linguagens de Programação | Ferramentas e Tecnologias |
 | :-----------------: | :-----------------------: |
-| <img height="40" src="https://github.com/rhayssakramer/rhayssakramer/blob/main/assets/icon/Java-Dark.svg"> | 
-| <img height="40" src=" https://github.com/rhayssakramer/rhayssakramer/blob/main/assets/icon/postgree.svg "> |
-| <img height="40" src="https://logowik.com/content/uploads/images/intellij-idea286.logowik.com.webp"> | 
-| <img height="40" src=" https://www.vectorlogo.zone/util/preview.html?image=/logos/springio/springio-icon.svg ">  |
+| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/java.svg"> | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/intellij-ide.svg"> |
+| <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/spring.svg"> | <img height="40" src="https://github.com/vieira-fabricio/java-certification/blob/my-new-branch/src/main/resources/assets/postgresql.svg">  |
 
 
 ## Instalação
