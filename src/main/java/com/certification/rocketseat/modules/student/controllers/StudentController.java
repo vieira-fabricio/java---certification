@@ -7,10 +7,7 @@ import com.certification.rocketseat.modules.student.usecases.StudentCertificatio
 import com.certification.rocketseat.modules.student.usecases.VerifyIfHasCertificationUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/students")
@@ -20,6 +17,11 @@ public class StudentController {
     private VerifyIfHasCertificationUseCase verifyIfHasCertificationUseCase;
     @Autowired
     private StudentCertificationAnswersUseCase studentCertificationAnswersUseCase;
+
+    @GetMapping("/status")
+    public String getStatus() {
+        return "Servidor rodando com sucesso!";
+    }
 
     @PostMapping("/verifyifhascertification")
     public String verifyIfHasCertification(@RequestBody VerifyHasCertificationDto verifyHasCertificationDto) {
