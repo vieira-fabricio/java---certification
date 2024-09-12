@@ -1,7 +1,7 @@
 package com.certification.rocketseat.modules.student.usecases;
 
-import com.certification.rocketseat.modules.questions.entidades.AlternativeEntity;
-import com.certification.rocketseat.modules.questions.entidades.QuestionEntity;
+import com.certification.rocketseat.modules.questions.entidades.Alternative;
+import com.certification.rocketseat.modules.questions.entidades.Question;
 import com.certification.rocketseat.modules.questions.repository.QuestionRepository;
 import com.certification.rocketseat.modules.student.dto.QuestionAnswerDto;
 import com.certification.rocketseat.modules.student.dto.StudentCertificationAnswerDto;
@@ -54,19 +54,19 @@ public class StudentCertificationAnswersUseCase {
 
     //Método que busca as alternativas das perguntas.
     private List<AnswersCertificationsEntity> processQuestionAnswers(StudentCertificationAnswerDto dto) {
-        List<QuestionEntity> questionsEntity = questionRepository.findByTechnology(dto.getTechnology());
+        List<Question> questionsEntity = questionRepository.findByTechnology(dto.getTechnology());
         List<AnswersCertificationsEntity> answersCertifications = new ArrayList<>();
 
         AtomicInteger correctAnswers = new AtomicInteger(0);
 
         dto.getQuestionAnswerDto().forEach(questionAnswer -> {
-            Optional<QuestionEntity> questionResultOptional = questionsEntity.stream()
+            Optional<Question> questionResultOptional = questionsEntity.stream()
                     .filter(question -> question.getId().equals(questionAnswer.getQuestionId()))
                             .findFirst();
 
             questionResultOptional.ifPresent(questionResult -> {
-                Optional<AlternativeEntity> correctAlternativeOptional = questionResult.getAlternativeEntity().stream()
-                        .filter(AlternativeEntity::isCorrect)
+                Optional<Alternative> correctAlternativeOptional = questionResult.getAlternatives().stream()
+                        .filter(Alternative::isCorrect)
                         .findFirst();
 
                 correctAlternativeOptional.ifPresent(correctAlternative -> {
@@ -74,7 +74,7 @@ public class StudentCertificationAnswersUseCase {
                     questionAnswer.setCorrect(isCorrect);
                     correctAnswers.incrementAndGet();
 
-                    AnswersCertificationsEntity answersCertificationsEntity = AnswersCertificationsEntity.builder()
+                    AnswersCertificationsEntity answersCertificationsEntity = new AnswersCertificationsEntity.Builder()
                             .answerID(questionAnswer.getAlternativeId())
                             .questionID(questionAnswer.getQuestionId())
                             .isCorrect(isCorrect)
@@ -111,11 +111,11 @@ public class StudentCertificationAnswersUseCase {
         // Calcula a nota com base no número total de respostas corretas
         double grade = (double) correctAnswersCount / dto.getQuestionAnswerDto().size() * 3;
 
-        CertificationStudentEntity certificationStudentEntity = CertificationStudentEntity.builder()
+        CertificationStudentEntity certificationStudentEntity = new CertificationStudentEntity.Builder()
                 .technology(dto.getTechnology())
                 .studentID(studendID)
-                .StudentName(dto.getName())
-                .grade((int) grade)
+                .studentName(dto.getName())
+                .grade(String.valueOf(grade))
                 .questionResults(questionResults)
                 .build();
 
@@ -137,7 +137,7 @@ public class StudentCertificationAnswersUseCase {
         Optional<StudentEntity> studentOptional = repository.findByEmail(email);
         return studentOptional.map(StudentEntity::getId)
                 .orElseGet(() -> {
-                    StudentEntity newStudent = StudentEntity.builder().email(email).build();
+                    StudentEntity newStudent = new StudentEntity.Builder().email(email).build();
                     return repository.save(newStudent).getId();
                 });
     }
