@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity(name = "alternatives")
-public class AlternativeEntity {
+public class Alternative {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,7 +27,7 @@ public class AlternativeEntity {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
+    @JoinColumn(name = "questions_id", nullable = false)
     @JsonBackReference
-    private QuestionEntity question;
+    private Question questions;
 }
