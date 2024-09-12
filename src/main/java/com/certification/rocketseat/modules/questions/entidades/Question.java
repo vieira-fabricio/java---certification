@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity(name = "questions")
-public class QuestionEntity {
+public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,9 +26,9 @@ public class QuestionEntity {
     private String technology;
     private String description;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "questions", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<AlternativeEntity> alternativeEntity;
+    private List<Alternative> alternatives;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
