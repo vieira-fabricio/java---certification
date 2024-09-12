@@ -18,4 +18,5 @@ public class QuestionResultDto {
     private String description;
 
     private List<AlternativesResultDto> alternativesResultDto;
+
 }
