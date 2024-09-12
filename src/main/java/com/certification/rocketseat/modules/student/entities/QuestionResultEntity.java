@@ -25,4 +25,36 @@ public class QuestionResultEntity {
     private UUID questionId;
 
     private boolean isCorrect;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public CertificationStudentEntity getCertificationStudentEntity() {
+        return certificationStudentEntity;
+    }
+
+    public void setCertificationStudentEntity(CertificationStudentEntity certificationStudentEntity) {
+        this.certificationStudentEntity = certificationStudentEntity;
+    }
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(boolean correct) {
+        isCorrect = correct;
+    }
 }
